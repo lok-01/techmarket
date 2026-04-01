@@ -22,7 +22,7 @@ function App() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/products");
+        const response = await fetch("https://techmarkett.onrender.com/api/products");
         const data = await response.json();
         // The backend returns { success: true, data: [...] }
         // We must set the products to data.data to avoid setting an object!
