@@ -5,7 +5,7 @@ import ProductsSection from '../Components/ProductsSection';
 function Shop({
     searchTerm, SetsearchTerm, selectbrand, setselectbrand, allbrands, sort, setSort,
     displayProducts, cartItem, wishlist, addtoCart, addtowishlist, decreaseQuantity,
-    removeFromCart, topRef
+    removeFromCart, topRef, isLoading
 }) {
     return (
         <div>
@@ -16,9 +16,11 @@ function Shop({
                 displayProducts={displayProducts} cartItem={cartItem} wishlist={wishlist}
                 addtoCart={addtoCart} addtowishlist={addtowishlist}
                 decreaseQuantity={decreaseQuantity} removeFromCart={removeFromCart} topRef={topRef}
+                isLoading={isLoading}
             />
         </div>
     );
 }
 
 export default Shop;
+

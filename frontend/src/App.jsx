@@ -21,11 +21,12 @@ function App() {
 
 
   const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     let isMounted = true;
 
-    const fetchProducts = async (retries = 3) => {
+    const fetchProducts = async (retries = 5) => {
       try {
         const res = await fetch("https://techmarkett.onrender.com/api/products");
 
@@ -42,22 +43,24 @@ function App() {
 
         if (isMounted) {
           setProducts(formattedProducts);
+          setIsLoading(false);
         }
 
       } catch (err) {
-        console.log("Retrying...", err);
+        console.log(`Retrying... (${retries} left)`, err.message);
 
-        if (retries > 0) {
-          setTimeout(() => fetchProducts(retries - 1), 3000);
+        if (retries > 0 && isMounted) {
+          // Progressive delay: 2s, 4s, 6s, 8s, 10s — gives Render time to wake up
+          const delay = (6 - retries) * 2000;
+          setTimeout(() => fetchProducts(retries - 1), delay);
+        } else if (isMounted) {
+          setIsLoading(false); // Stop skeleton after all retries fail
         }
       }
     };
 
-    // 🔥 Wake backend first
-    // fetch("https://techmarkett.onrender.com"); // Not needed for localhost
-
-    // ⏳ Then fetch data
-    setTimeout(fetchProducts, 2000);
+    // Start fetching immediately — no delay needed
+    fetchProducts();
 
     return () => { isMounted = false; };
   }, []);
@@ -329,6 +332,7 @@ function App() {
               decreaseQuantity={decreaseQuantity}
               removeFromCart={removeFromCart}
               topRef={top}
+              isLoading={isLoading}
             />
           }
         />

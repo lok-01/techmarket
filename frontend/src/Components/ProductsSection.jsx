@@ -16,17 +16,32 @@ function ProductsSection({
   addtowishlist,
   decreaseQuantity,
   removeFromCart,
-  topRef
+  topRef,
+  isLoading
 }) {
+
+  // Skeleton card component for loading state
+  const SkeletonCard = () => (
+    <div className="skeleton-card">
+      <div className="skeleton-image"></div>
+      <div className="skeleton-content">
+        <div className="skeleton-line skeleton-title"></div>
+        <div className="skeleton-line skeleton-brand"></div>
+        <div className="skeleton-line skeleton-price"></div>
+        <div className="skeleton-line skeleton-btn"></div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="fade-up">
       <div className='product-section'>
         <h2>Featured Products</h2>
 
-        {/* ✅ FILTER BAR: Search + Brand Filter + Sort */}
+        {/* FILTER BAR: Search + Brand Filter + Sort */}
         <div className='filter-bar'>
 
-          {/* 🔍 Search Input */}
+          {/* Search Input */}
           <div className='search-wrapper'>
             <span className='search-icon'>🔍</span>
             <input
@@ -38,7 +53,7 @@ function ProductsSection({
             />
           </div>
 
-          {/* 🏷️ Brand Filter Dropdown */}
+          {/* Brand Filter Dropdown */}
           <select
             className='filter-select'
             value={selectbrand}
@@ -50,7 +65,7 @@ function ProductsSection({
             ))}
           </select>
 
-          {/* 📊 Sort Dropdown */}
+          {/* Sort Dropdown */}
           <select
             className='filter-select'
             value={sort}
@@ -64,10 +79,18 @@ function ProductsSection({
           </select>
         </div>
 
-        {/* ✅ Product Grid */}
+        {/* Product Grid OR Skeleton Loader */}
         <div className="fade-up">
           <div className='product-container' ref={topRef}>
-            {displayProducts.length > 0 ? (
+
+            {isLoading ? (
+              // Show 8 skeleton cards while backend is waking up
+              <>
+                {[...Array(8)].map((_, i) => (
+                  <SkeletonCard key={i} />
+                ))}
+              </>
+            ) : displayProducts.length > 0 ? (
               displayProducts.map((product) => {
                 const cartProduct = cartItem.find(item => item.id === product.id);
                 const cartQuantity = cartProduct ? cartProduct.quantity : 0;
@@ -93,7 +116,7 @@ function ProductsSection({
               })
             ) : (
               <div className='no-products'>
-                <p>😕 No products found. Try a different search or filter!</p>
+                <p>No products found. Try a different search or filter!</p>
               </div>
             )}
           </div>
@@ -104,3 +127,4 @@ function ProductsSection({
 }
 
 export default ProductsSection;
+
