@@ -9,6 +9,7 @@ A **full-stack MERN e-commerce application** with JWT authentication, role-based
 - **Frontend**: [https://techmarkett.vercel.app](https://techmarkett.vercel.app/)
 - **Backend API**: [https://techmarkett.onrender.com/api/products](https://techmarkett.onrender.com/api/products)
 
+Default admin credentials : admin@gmail.com pass : admim123
 ## Features
 
 ### Customer Features
