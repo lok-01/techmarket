@@ -10,6 +10,9 @@ import Home from './Pages/Home';
 import Shop from './Pages/Shop';
 import About from './Pages/About';
 import Contact from './Pages/Contact';
+import Login from './Pages/Login';
+import Signup from './Pages/Signup';
+import AdminDashboard from './Pages/AdminDashboard';
 import Footer from './Components/Footer';
 
 
@@ -19,46 +22,46 @@ function App() {
 
   const [products, setProducts] = useState([]);
 
- useEffect(() => {
-  let isMounted = true;
+  useEffect(() => {
+    let isMounted = true;
 
-  const fetchProducts = async (retries = 3) => {
-    try {
-      const res = await fetch("https://techmarkett.onrender.com/api/products");
+    const fetchProducts = async (retries = 3) => {
+      try {
+        const res = await fetch("http://localhost:5000/api/products");
 
-      if (!res.ok) throw new Error("Server not ready");
+        if (!res.ok) throw new Error("Server not ready");
 
-      const data = await res.json();
+        const data = await res.json();
 
-      const productsArray = data.data || [];
+        const productsArray = data.data || [];
 
-      const formattedProducts = productsArray.map(item => ({
-        ...item,
-        id: item.id || item._id
-      }));
+        const formattedProducts = productsArray.map(item => ({
+          ...item,
+          id: item.id || item._id
+        }));
 
-      if (isMounted) {
-        setProducts(formattedProducts);
+        if (isMounted) {
+          setProducts(formattedProducts);
+        }
+
+      } catch (err) {
+        console.log("Retrying...", err);
+
+        if (retries > 0) {
+          setTimeout(() => fetchProducts(retries - 1), 3000);
+        }
       }
+    };
 
-    } catch (err) {
-      console.log("Retrying...", err);
+    // 🔥 Wake backend first
+    // fetch("https://techmarkett.onrender.com"); // Not needed for localhost
 
-      if (retries > 0) {
-        setTimeout(() => fetchProducts(retries - 1), 3000);
-      }
-    }
-  };
+    // ⏳ Then fetch data
+    setTimeout(fetchProducts, 2000);
 
-  // 🔥 Wake backend first
-  fetch("https://techmarkett.onrender.com");
+    return () => { isMounted = false; };
+  }, []);
 
-  // ⏳ Then fetch data
-  setTimeout(fetchProducts, 2000);
-
-  return () => { isMounted = false; };
-}, []);
-  
   const top = useRef(null);
 
   function scrollontop() {
@@ -340,6 +343,13 @@ function App() {
           path="/contact"
           element={<Contact />}
         />
+
+        {/* Auth pages */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+
+        {/* Admin dashboard (protected inside the component) */}
+        <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
 
 

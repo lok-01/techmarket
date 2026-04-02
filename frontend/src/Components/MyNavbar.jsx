@@ -1,6 +1,6 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import User from './User'
+import React, { useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { UserContext } from '../context/Createcontext';
 import '../App.css'
 
 const MyNavbar = ({
@@ -12,6 +12,14 @@ const MyNavbar = ({
   setIsCartOpen,
   setIsWishlistOpen
 }) => {
+  const { user, isLoggedIn, isAdmin, logout } = useContext(UserContext);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
+
   return (
     <div className='Nav-bar'>
       <div className='nav-brand-wrapper'>
@@ -40,12 +48,26 @@ const MyNavbar = ({
           <Link to="/shop">Products</Link>
           <Link to="/about">About</Link>
           <Link to="/contact">Contact</Link>
+          {isAdmin && <Link to="/admin" className="admin-nav-link">Dashboard</Link>}
         </div>
 
         <div className='nav-actions'>
-          <button className='login-button'>Login</button>
-          <button className='signup-button'>Sign Up</button>
-          <User />
+          {/* Auth buttons: show Login/Signup OR User info + Logout */}
+          {!isLoggedIn ? (
+            <>
+              <Link to="/login"><button className='login-button'>Login</button></Link>
+              <Link to="/signup"><button className='signup-button'>Sign Up</button></Link>
+            </>
+          ) : (
+            <div className='nav-user-info'>
+              <span className='nav-username'>
+                {isAdmin ? "👑" : "👤"} {user?.username}
+              </span>
+              <button className='logout-button' onClick={handleLogout}>
+                Logout
+              </button>
+            </div>
+          )}
 
           {/* ✅ Desktop-only icons (hidden on mobile drawer) */}
           <div className='nav-desktop-actions'>
@@ -71,3 +93,4 @@ const MyNavbar = ({
 }
 
 export default MyNavbar;
+

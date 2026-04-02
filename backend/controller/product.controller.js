@@ -1,9 +1,6 @@
-import express from "express"
 import Product from "../model/product.model.js"
 
-
-const router = express.Router();
-
+// Admin only - create a product
 const createProduct = async (req, res) => {
     try {
         const product = req.body;
@@ -21,6 +18,7 @@ const createProduct = async (req, res) => {
     }
 }
 
+// Anyone (logged in or not) - get all products
 const getAllProducts = async (req, res) => {
     try {
         const products = await Product.find({});
@@ -36,7 +34,46 @@ const getAllProducts = async (req, res) => {
     }
 }
 
+// Admin only - update a product
+const updateProduct = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const product = req.body;
+
+        const updatedProduct = await Product.findByIdAndUpdate(id, product, { new: true });
+
+        if (!updatedProduct) {
+            return res.status(404).json({ success: false, message: "Product not found" })
+        }
+
+        res.status(200).json({ success: true, message: "Product updated successfully", data: updatedProduct })
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: "Internal server error" })
+    }
+}
+
+// Admin only - delete a product
+const deleteProduct = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const deletedProduct = await Product.findByIdAndDelete(id);
+
+        if (!deletedProduct) {
+            return res.status(404).json({ success: false, message: "Product not found" })
+        }
+
+        res.status(200).json({ success: true, message: "Product deleted successfully" })
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: "Internal server error" })
+    }
+}
+
 export {
     createProduct,
-    getAllProducts
+    getAllProducts,
+    updateProduct,
+    deleteProduct
 };
