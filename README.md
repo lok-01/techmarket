@@ -197,9 +197,3 @@ Password: admin123
                       -> Middleware checks role (admin/user)
                       -> Controller runs if authorized
 ```
-
----
-
-## License
-
-This project is open source and available under the [MIT License](LICENSE).
