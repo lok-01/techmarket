@@ -19,26 +19,46 @@ function App() {
 
   const [products, setProducts] = useState([]);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch("https://techmarkett.onrender.com/api/products");
-        const data = await response.json();
-        // The backend returns { success: true, data: [...] }
-        // We must set the products to data.data to avoid setting an object!
-        // Also ensure every product has an `id` property (Mongo uses `_id` by default)
-        const productsArray = data.data || [];
-        const formattedProducts = productsArray.map(item => ({
-            ...item,
-            id: item.id || item._id
-        }));
+ useEffect(() => {
+  let isMounted = true;
+
+  const fetchProducts = async (retries = 3) => {
+    try {
+      const res = await fetch("https://techmarkett.onrender.com/api/products");
+
+      if (!res.ok) throw new Error("Server not ready");
+
+      const data = await res.json();
+
+      const productsArray = data.data || [];
+
+      const formattedProducts = productsArray.map(item => ({
+        ...item,
+        id: item.id || item._id
+      }));
+
+      if (isMounted) {
         setProducts(formattedProducts);
-      } catch (error) {
-        console.error("Error fetching products:", error);
       }
-    };
-    fetchProducts();
-  }, []);
+
+    } catch (err) {
+      console.log("Retrying...", err);
+
+      if (retries > 0) {
+        setTimeout(() => fetchProducts(retries - 1), 3000);
+      }
+    }
+  };
+
+  // 🔥 Wake backend first
+  fetch("https://techmarkett.onrender.com");
+
+  // ⏳ Then fetch data
+  setTimeout(fetchProducts, 2000);
+
+  return () => { isMounted = false; };
+}, []);
+  
   const top = useRef(null);
 
   function scrollontop() {
